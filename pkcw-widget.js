@@ -3,7 +3,7 @@
 
   try {
     if (window.__PKCW_WIDGET__) return;
-    window.__PKCW_WIDGET__ = { version: "1.3.0-phone-mobile-layout" };
+    window.__PKCW_WIDGET__ = { version: "1.3.1-phone-unified" };
 
     var CONFIG = {
       id: "pkcw",
@@ -36,11 +36,6 @@
       },
       track: function () {}
     };
-
-    var lordIconLoading = false;
-    var lordIconLoaded = false;
-    var lordIconWaiters = [];
-    var lordIconPreloadRequested = false;
 
     function el(tag, attrs) {
       var n = document.createElement(tag);
@@ -117,7 +112,7 @@
         + ".pkcw-btn{pointer-events:auto;display:inline-flex;align-items:center;justify-content:center;width:var(--pkcw-btn);height:var(--pkcw-btn);min-width:var(--pkcw-btn);min-height:var(--pkcw-btn);aspect-ratio:1/1;border-radius:999px;border:0;padding:0;cursor:pointer;background:" + CONFIG.theme.panelBg + ";box-shadow:" + CONFIG.theme.shadow + ";color:" + CONFIG.theme.text + ";position:relative;z-index:1;overflow:hidden;transition:opacity .18s ease,visibility .18s ease,transform .18s ease}"
         + ".pkcw-btn::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,0) 34%,rgba(255,255,255,.35) 50%,rgba(255,255,255,0) 66%);transform:translateX(-140%);animation:pkcw-trigger-shine 3.6s ease-in-out infinite}"
         + ".pkcw-btnIcon{display:block;line-height:0;width:22px;height:22px}"
-        + ".pkcw-btnIcon>svg,.pkcw-btnIcon>lord-icon{width:100%;height:100%;display:block}"
+        + ".pkcw-btnIcon>svg{width:100%;height:100%;display:block}"
         + ".pkcw-btnIcon .pkcw-triggerPhone{transform-origin:50% 50%;animation:pkcw-trigger-icon-pulse 2.2s ease-in-out infinite}"
         + ".pkcw-root[data-open='1'] .pkcw-btn{opacity:0;visibility:hidden;transform:scale(.96);pointer-events:none}"
         + ".pkcw-btn:focus{outline:none}"
@@ -204,9 +199,6 @@
     openBtn.appendChild(openBtnIcon);
 
     var openBtnPhoneHtml = openBtnIcon.innerHTML;
-    var openBtnDesktopHtml = openBtnPhoneHtml;
-    var openBtnLordiconHtml =
-      '<lord-icon src="https://cdn.lordicon.com/azemaxsk.json" trigger="loop" delay="1500" colors="primary:#ffffff" style="width:100%;height:100%"></lord-icon>';
 
     var openBtnCrossHtml =
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17" fill="none" aria-hidden="true">' +
@@ -287,92 +279,17 @@
     root.appendChild(panel);
     root.appendChild(openBtn);
 
-    function flushLordIconWaiters() {
-      while (lordIconWaiters.length) {
-        try {
-          lordIconWaiters.shift()();
-        } catch (_) {}
-      }
-    }
-
-    function requestLordIconPreload() {
-      if (lordIconPreloadRequested) return;
-      lordIconPreloadRequested = true;
-
-      function runWhenReady(onReady) {
-        if (lordIconLoaded) {
-          onReady();
-          return;
-        }
-        lordIconWaiters.push(onReady);
-        try {
-          if (window.customElements && window.customElements.get("lord-icon")) {
-            lordIconLoaded = true;
-            flushLordIconWaiters();
-            return;
-          }
-        } catch (_) {}
-
-        if (lordIconLoading) return;
-        lordIconLoading = true;
-
-        var existing = document.querySelector("script[src='https://cdn.lordicon.com/lordicon.js']");
-        if (existing) {
-          if (
-            (existing.readyState && existing.readyState === "complete") ||
-            existing.getAttribute("data-loaded") === "1"
-          ) {
-            lordIconLoaded = true;
-            flushLordIconWaiters();
-          } else {
-            existing.addEventListener(
-              "load",
-              function () {
-                existing.setAttribute("data-loaded", "1");
-                lordIconLoaded = true;
-                flushLordIconWaiters();
-              },
-              { once: true }
-            );
-          }
-          return;
-        }
-
-        var liScript = el("script", { src: "https://cdn.lordicon.com/lordicon.js" });
-        liScript.async = true;
-        liScript.onload = function () {
-          liScript.setAttribute("data-loaded", "1");
-          lordIconLoaded = true;
-          flushLordIconWaiters();
-        };
-        document.head.appendChild(liScript);
-      }
-
-      runWhenReady(function () {
-        openBtnDesktopHtml = openBtnLordiconHtml;
-        if (root.getAttribute("data-open") !== "1" && openBtnIcon && !isMobile480()) {
-          openBtnIcon.innerHTML = openBtnDesktopHtml;
-        }
-        applyMobileCopyTweaks();
-      });
-    }
-
     function setVisible(v) {
       root.setAttribute("data-visible", v ? "1" : "0");
     }
 
-    function applyMobileCopyTweaks() {
+    function applyTriggerIcon() {
       var mobile = isMobile480();
       var opened = root.getAttribute("data-open") === "1";
-      var html;
+      var html = mobile && opened ? openBtnCrossHtml : openBtnPhoneHtml;
 
-      if (mobile && opened) {
-        html = openBtnCrossHtml;
-        openBtn.classList.add("pkcw-btn--cross");
-      } else {
-        html = mobile ? openBtnPhoneHtml : openBtnDesktopHtml;
-        openBtn.classList.remove("pkcw-btn--cross");
-      }
+      if (mobile && opened) openBtn.classList.add("pkcw-btn--cross");
+      else openBtn.classList.remove("pkcw-btn--cross");
 
       if (openBtnIcon.innerHTML !== html) {
         openBtnIcon.innerHTML = html;
@@ -381,7 +298,7 @@
 
     function openPanel() {
       root.setAttribute("data-open", "1");
-      applyMobileCopyTweaks();
+      applyTriggerIcon();
       try {
         closeBtn.focus({ preventScroll: true });
       } catch (_) {}
@@ -389,19 +306,15 @@
 
     function closePanel() {
       root.setAttribute("data-open", "0");
-      applyMobileCopyTweaks();
+      applyTriggerIcon();
       updateVisibility();
     }
 
     on(openBtn, "click", function (e) {
       e.preventDefault();
-      requestLordIconPreload();
       if (root.getAttribute("data-open") === "1") closePanel();
       else openPanel();
     });
-
-    on(openBtn, "mouseenter", requestLordIconPreload, { passive: true });
-    on(openBtn, "touchstart", requestLordIconPreload, { passive: true });
 
     on(closeBtn, "click", function (e) {
       e.preventDefault();
@@ -461,9 +374,8 @@
       }
 
       var should = y >= threshold;
-      if (should) requestLordIconPreload();
       setVisible(should);
-      applyMobileCopyTweaks();
+      applyTriggerIcon();
     }
 
     function onScroll() {
@@ -483,15 +395,7 @@
 
       on(window, "scroll", onScroll, { passive: true });
       on(window, "resize", onScroll);
-      requestLordIconPreload();
-
-      on(window, "load", function () {
-        if (window.requestIdleCallback) {
-          window.requestIdleCallback(requestLordIconPreload, { timeout: 2500 });
-        } else {
-          setTimeout(requestLordIconPreload, 800);
-        }
-      });
+      applyTriggerIcon();
     }
 
     if (document.readyState === "loading") {

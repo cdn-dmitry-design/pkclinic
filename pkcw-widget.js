@@ -3,7 +3,7 @@
 
   try {
     if (window.__PKCW_WIDGET__) return;
-    window.__PKCW_WIDGET__ = { version: "1.3.1-phone-unified" };
+    window.__PKCW_WIDGET__ = { version: "1.4.1-metrika-goals" };
 
     var CONFIG = {
       id: "pkcw",
@@ -12,6 +12,7 @@
       bottomPx: 30,
       rightPx: 30,
       zIndex: 2147483000,
+      metrikaCounterId: 30934311,
       theme: {
         panelBg: "#3b3d6b",
         text: "#ffffff",
@@ -21,20 +22,39 @@
         ring: "rgba(255,255,255,.35)"
       },
       primaryActions: [
-        { id: "signup", label: "Записаться", icon: "signupDoc", href: "#form-vizit", target: "_self" },
-        { id: "online", label: "Онлайн-запись", icon: "calendar", href: "#form-zapis", target: "_self", marquee: true },
-        { id: "call", label: "Телефон", icon: "phone", href: "tel:+74232600000", target: "_self" }
+        { id: "signup", goal: "zapisvidget", label: "Записаться", icon: "signupDoc", href: "#form-vizit", target: "_self" },
+        { id: "online", goal: "onlinezapisvidget", label: "Онлайн-запись", icon: "calendar", href: "#form-zapis", target: "_self", marquee: true },
+        { id: "call", goal: "telefonvidget", label: "Телефон", icon: "phone", href: "tel:+74232600000", target: "_self" }
       ],
       moreActions: [
-        { id: "max", label: "Макс", icon: "max", href: "https://max.ru/u/f9LHodD0cOJlwy2TNgRb5Pu6Hhgop2C7ENynPaT9Y_MMHiZmQvKvsgTXih0", target: "_blank" },
-        { id: "whatsapp", label: "Вотсап", icon: "whatsapp", href: "https://api.whatsapp.com/send?phone=79147181865", target: "_blank" },
-        { id: "telegram", label: "Телеграм", icon: "telegram", href: "https://t.me/pololstvo_krasoty", target: "_blank" }
+        { id: "max", goal: "maxvidget", label: "Макс", icon: "max", href: "https://max.ru/u/f9LHodD0cOJlwy2TNgRb5Pu6Hhgop2C7ENynPaT9Y_MMHiZmQvKvsgTXih0", target: "_blank" },
+        { id: "whatsapp", goal: "whatupvidget", label: "Вотсап", icon: "whatsapp", href: "https://api.whatsapp.com/send?phone=79147181865", target: "_blank" },
+        { id: "telegram", goal: "tgvidget", label: "Телеграм", icon: "telegram", href: "https://t.me/pololstvo_krasoty", target: "_blank" }
       ],
       labels: {
         open: "Открыть виджет",
         close: "Закрыть"
       },
-      track: function () {}
+      track: function (goalId) {
+        if (!goalId) return;
+
+        var attempts = 0;
+        function sendGoal() {
+          var counterId = Number(window.mainMetrikaId || CONFIG.metrikaCounterId);
+
+          if (counterId && typeof window.ym === "function") {
+            try {
+              window.ym(counterId, "reachGoal", goalId);
+            } catch (_) {}
+            return;
+          }
+
+          attempts += 1;
+          if (attempts < 10) window.setTimeout(sendGoal, 500);
+        }
+
+        sendGoal();
+      }
     };
 
     function el(tag, attrs) {
@@ -227,6 +247,7 @@
       });
 
       node.setAttribute("data-action-id", a.id || "");
+      node.setAttribute("data-metrika-goal", a.goal || "");
       node.appendChild(el("div", { class: "pkcw-icon", html: iconSvg(a.icon) }));
 
       if (a.marquee) {
@@ -244,6 +265,7 @@
       }
 
       on(node, "click", function () {
+        CONFIG.track(a.goal);
         closePanel();
       });
 

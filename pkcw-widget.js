@@ -3,7 +3,7 @@
 
   try {
     if (window.__PKCW_WIDGET__) return;
-    window.__PKCW_WIDGET__ = { version: "1.4.1-metrika-goals" };
+    window.__PKCW_WIDGET__ = { version: "1.4.0-mango" };
 
     var CONFIG = {
       id: "pkcw",
@@ -12,7 +12,6 @@
       bottomPx: 30,
       rightPx: 30,
       zIndex: 2147483000,
-      metrikaCounterId: 30934311,
       theme: {
         panelBg: "#3b3d6b",
         text: "#ffffff",
@@ -21,40 +20,28 @@
         shadow: "0 14px 34px rgba(0,0,0,.18)",
         ring: "rgba(255,255,255,.35)"
       },
+      /* Mango Call Tracking: тот же класс, что в кабинете Mango */
+      mango: {
+        enabled: true,
+        className: "mgo-number",
+        displayNumber: "+7 (423) 260-00-00",
+        baseTel: "tel:+74232600000"
+      },
       primaryActions: [
-        { id: "signup", goal: "zapisvidget", label: "Записаться", icon: "signupDoc", href: "#form-vizit", target: "_self" },
-        { id: "online", goal: "onlinezapisvidget", label: "Онлайн-запись", icon: "calendar", href: "#form-zapis", target: "_self", marquee: true },
-        { id: "call", goal: "telefonvidget", label: "Телефон", icon: "phone", href: "tel:+74232600000", target: "_self" }
+        { id: "signup", label: "Записаться", icon: "signupDoc", href: "#form-vizit", target: "_self" },
+        { id: "online", label: "Онлайн-запись", icon: "calendar", href: "#form-zapis", target: "_self", marquee: true },
+        { id: "call", label: "Телефон", icon: "phone", href: "tel:+74232600000", target: "_self" }
       ],
       moreActions: [
-        { id: "max", goal: "maxvidget", label: "Макс", icon: "max", href: "https://max.ru/u/f9LHodD0cOJlwy2TNgRb5Pu6Hhgop2C7ENynPaT9Y_MMHiZmQvKvsgTXih0", target: "_blank" },
-        { id: "whatsapp", goal: "whatupvidget", label: "Вотсап", icon: "whatsapp", href: "https://api.whatsapp.com/send?phone=79147181865", target: "_blank" },
-        { id: "telegram", goal: "tgvidget", label: "Телеграм", icon: "telegram", href: "https://t.me/pololstvo_krasoty", target: "_blank" }
+        { id: "max", label: "Макс", icon: "max", href: "https://max.ru/u/f9LHodD0cOJlwy2TNgRb5Pu6Hhgop2C7ENynPaT9Y_MMHiZmQvKvsgTXih0", target: "_blank" },
+        { id: "whatsapp", label: "Вотсап", icon: "whatsapp", href: "https://api.whatsapp.com/send?phone=79147181865", target: "_blank" },
+        { id: "telegram", label: "Телеграм", icon: "telegram", href: "https://t.me/pololstvo_krasoty", target: "_blank" }
       ],
       labels: {
         open: "Открыть виджет",
         close: "Закрыть"
       },
-      track: function (goalId) {
-        if (!goalId) return;
-
-        var attempts = 0;
-        function sendGoal() {
-          var counterId = Number(window.mainMetrikaId || CONFIG.metrikaCounterId);
-
-          if (counterId && typeof window.ym === "function") {
-            try {
-              window.ym(counterId, "reachGoal", goalId);
-            } catch (_) {}
-            return;
-          }
-
-          attempts += 1;
-          if (attempts < 10) window.setTimeout(sendGoal, 500);
-        }
-
-        sendGoal();
-      }
+      track: function () {}
     };
 
     function el(tag, attrs) {
@@ -190,9 +177,79 @@
         + "@media (min-width:481px){.pkcw-root{--pkcw-btn:62px}.pkcw-btnIcon{width:28px;height:28px}}"
         + "@media (max-width:360px){.pkcw-root{--pkcw-btn:58px}.pkcw-card{padding:8px 0}.pkcw-icon{width:40px;height:40px}.pkcw-icon svg{width:19px;height:19px}.pkcw-btnIcon{width:32px;height:32px}}"
         + "@media (min-width:1920px){.pkcw-root{--pkcw-btn:54px}.pkcw-card{width:300px;padding:14px 14px 64px 14px}.pkcw-title{font-size:15px}.pkcw-icon{width:46px;height:46px}.pkcw-icon svg{width:22px;height:22px}.pkcw-label{font-size:13px;max-width:98px}.pkcw-labelWrap{max-width:98px}.pkcw-btnIcon{width:23px;height:23px}.pkcw-close{width:34px;height:34px;min-width:34px;min-height:34px}.pkcw-close svg{width:12px;height:12px}.pkcw-footer{left:19px}}"
-        + "@media (min-width:2560px){.pkcw-root{--pkcw-btn:58px}.pkcw-card{width:320px}.pkcw-title{font-size:16px}.pkcw-icon{width:50px;height:50px}.pkcw-icon svg{width:24px;height:24px}.pkcw-label{font-size:14px;max-width:110px}.pkcw-labelWrap{max-width:110px}.pkcw-btnIcon{width:25px;height:25px}.pkcw-close{width:36px;height:36px;min-width:36px;min-height:36px}.pkcw-close svg{width:13px;height:13px}.pkcw-footer{left:19px}}";
+        + "@media (min-width:2560px){.pkcw-root{--pkcw-btn:58px}.pkcw-card{width:320px}.pkcw-title{font-size:16px}.pkcw-icon{width:50px;height:50px}.pkcw-icon svg{width:24px;height:24px}.pkcw-label{font-size:14px;max-width:110px}.pkcw-labelWrap{max-width:110px}.pkcw-btnIcon{width:25px;height:25px}.pkcw-close{width:36px;height:36px;min-width:36px;min-height:36px}.pkcw-close svg{width:13px;height:13px}.pkcw-footer{left:19px}}"
+        + ".pkcw-mgo-num{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}";
 
       document.head.appendChild(el("style", { id: "pkcw-style", text: css }));
+    }
+
+    function digitsOnly(s) {
+      return String(s || "").replace(/\D+/g, "");
+    }
+
+    function isClinicPhoneDigits(d) {
+      return d === "74232600000" || d === "4232600000" || d.slice(-10) === "4232600000";
+    }
+
+    function normalizeTelHref(href) {
+      var d = digitsOnly(href);
+      if (!d) return "";
+      if (d.charAt(0) !== "7" && d.length === 10) d = "7" + d;
+      return "tel:+" + d;
+    }
+
+    /** Берём уже подменённый Mango номер из шапки/страницы (если есть). */
+    function findMangoTelFromPage() {
+      var links = document.querySelectorAll('a[href^="tel:"]');
+      var i, href, d, base = digitsOnly((CONFIG.mango && CONFIG.mango.baseTel) || "74232600000");
+      for (i = 0; i < links.length; i++) {
+        href = links[i].getAttribute("href") || "";
+        d = digitsOnly(href);
+        if (!d) continue;
+        if (isClinicPhoneDigits(d)) continue;
+        if (d === base) continue;
+        if (d.length >= 11) return normalizeTelHref(href);
+      }
+      var marked = document.querySelectorAll(".mgo-number");
+      for (i = 0; i < marked.length; i++) {
+        href = marked[i].getAttribute("href") || "";
+        if (!/^tel:/i.test(href)) {
+          var inner = marked[i].querySelector && marked[i].querySelector('a[href^="tel:"]');
+          href = inner ? inner.getAttribute("href") || "" : "";
+        }
+        d = digitsOnly(href);
+        if (d && !isClinicPhoneDigits(d) && d !== base && d.length >= 11) {
+          return normalizeTelHref(href);
+        }
+        var txt = digitsOnly(marked[i].textContent || "");
+        if (txt && !isClinicPhoneDigits(txt) && txt !== base && txt.length >= 11) {
+          return normalizeTelHref(txt);
+        }
+      }
+      return "";
+    }
+
+    function applyMangoToCallLink(node) {
+      if (!node || !CONFIG.mango || CONFIG.mango.enabled === false) return;
+      var cls = CONFIG.mango.className || "mgo-number";
+      node.classList.add(cls);
+      node.setAttribute("data-mgo-base-tel", CONFIG.mango.baseTel || "tel:+74232600000");
+
+      if (!node.querySelector(".pkcw-mgo-num")) {
+        node.appendChild(el("span", {
+          class: "pkcw-mgo-num " + cls,
+          text: CONFIG.mango.displayNumber || "+7 (423) 260-00-00"
+        }));
+      }
+
+      var tracked = findMangoTelFromPage();
+      if (tracked) node.setAttribute("href", tracked);
+    }
+
+    function syncMangoCallLinks() {
+      if (!CONFIG.mango || CONFIG.mango.enabled === false) return;
+      var callLinks = root.querySelectorAll('a.pkcw-action[data-action-id="call"], a.pkcw-action[href^="tel:"]');
+      for (var i = 0; i < callLinks.length; i++) applyMangoToCallLink(callLinks[i]);
     }
 
     var root = el("div", {
@@ -247,7 +304,6 @@
       });
 
       node.setAttribute("data-action-id", a.id || "");
-      node.setAttribute("data-metrika-goal", a.goal || "");
       node.appendChild(el("div", { class: "pkcw-icon", html: iconSvg(a.icon) }));
 
       if (a.marquee) {
@@ -264,8 +320,11 @@
         node.appendChild(el("div", { class: "pkcw-label", text: a.label || "" }));
       }
 
+      if (a.id === "call" || /^tel:/i.test(String(a.href || ""))) {
+        applyMangoToCallLink(node);
+      }
+
       on(node, "click", function () {
-        CONFIG.track(a.goal);
         closePanel();
       });
 
@@ -418,6 +477,12 @@
       on(window, "scroll", onScroll, { passive: true });
       on(window, "resize", onScroll);
       applyTriggerIcon();
+
+      /* Mango часто отрабатывает чуть позже виджета — догоняем href */
+      syncMangoCallLinks();
+      setTimeout(syncMangoCallLinks, 1000);
+      setTimeout(syncMangoCallLinks, 3000);
+      setTimeout(syncMangoCallLinks, 6000);
     }
 
     if (document.readyState === "loading") {

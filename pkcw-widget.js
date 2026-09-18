@@ -3,7 +3,7 @@
 
   try {
     if (window.__PKCW_WIDGET__) return;
-    window.__PKCW_WIDGET__ = { version: "1.4.0-mango" };
+    window.__PKCW_WIDGET__ = { version: "1.4.1-mango" };
 
     var CONFIG = {
       id: "pkcw",
@@ -232,14 +232,20 @@
     function applyMangoToCallLink(node) {
       if (!node || !CONFIG.mango || CONFIG.mango.enabled === false) return;
       var cls = CONFIG.mango.className || "mgo-number";
-      node.classList.add(cls);
+
+      /* Класс Mango только на скрытом span — иначе Mango сотрёт иконку/подпись */
+      node.classList.remove(cls);
       node.setAttribute("data-mgo-base-tel", CONFIG.mango.baseTel || "tel:+74232600000");
 
-      if (!node.querySelector(".pkcw-mgo-num")) {
-        node.appendChild(el("span", {
+      var hidden = node.querySelector(".pkcw-mgo-num");
+      if (!hidden) {
+        hidden = el("span", {
           class: "pkcw-mgo-num " + cls,
           text: CONFIG.mango.displayNumber || "+7 (423) 260-00-00"
-        }));
+        });
+        node.appendChild(hidden);
+      } else {
+        hidden.classList.add(cls);
       }
 
       var tracked = findMangoTelFromPage();
